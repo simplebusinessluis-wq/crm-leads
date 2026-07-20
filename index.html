@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM - Lead Management</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-900);
+      line-height: 1.5;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .header {
+      background: white;
+      border-bottom: 1px solid var(--gray-200);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+    .header h1 { margin: 0; font-size: 24px; color: var(--gray-800); }
+    .nav {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .nav-button {
+      padding: 8px 16px;
+      border: 1px solid var(--gray-300);
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--gray-600);
+      transition: all 0.2s;
+    }
+    .nav-button:hover { background: var(--gray-50); }
+    .nav-button.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .card-title { font-size: 18px; font-weight: 600; margin: 0; }
+    .button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .button-primary { background: var(--primary); color: white; }
+    .button-primary:hover { background: var(--primary-dark); }
+    .button-secondary { background: var(--gray-100); color: var(--gray-700); }
+    .button-success { background: var(--success); color: white; }
+    .button-danger { background: var(--danger); color: white; }
+    .button-warning { background: var(--warning); color: white; }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th, .table td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .table th {
+      font-weight: 600;
+      color: var(--gray-600);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .table tr:hover { background: var(--gray-50); }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .badge-hot { background: #fef2f2; color: #dc2626; }
+    .badge-warm { background: #fffbeb; color: #d97706; }
+    .badge-cold { background: #eff6ff; color: #2563eb; }
+    .badge-new { background: #f0fdf4; color: #16a34a; }
+    .badge-customer { background: #dbeafe; color: #1d4ed8; }
+    .badge-nurture { background: #fef3c7; color: #92400e; }
+    .badge-not-interested { background: #f3f4f6; color: #6b7280; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; color: var(--gray-700); }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--gray-300);
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .form-textarea { min-height: 100px; resize: vertical; }
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal {
+      background: white;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-body { padding: 20px; }
+    .modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .stat-value { font-size: 32px; font-weight: 700; color: var(--gray-800); }
+    .stat-label { font-size: 14px; color: var(--gray-500); margin-top: 4px; }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-500); }
+    .search-box {
+      padding: 10px 12px;
+      border: 1px solid var(--gray-300);
+      border-radius: 6px;
+      font-size: 14px;
+      width: 300px;
+    }
+    .hidden { display: none !important; }
+    .action-buttons { display: flex; gap: 8px; }
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    @media (max-width: 768px) {
+      .container { padding: 12px; }
+      .table { font-size: 12px; }
+      .table th, .table td { padding: 8px; }
+      .nav { gap: 4px; }
+      .nav-button { padding: 6px 12px; font-size: 12px; }
+      .search-box { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="container">
+      <h1>CRM - Lead Management</h1>
+      <div class="nav">
+        <button class="nav-button active" data-view="dashboard">Dashboard</button>
+        <button class="nav-button" data-view="pipeline">Pipeline</button>
+        <button class="nav-button" data-view="hot">Hot Leads</button>
+        <button class="nav-button" data-view="followups">Follow-ups</button>
+        <button class="nav-button" data-view="customers">Customers</button>
+        <button class="nav-button" data-view="nurture">Nurture</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Dashboard View -->
+    <div id="view-dashboard" class="view">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Total Leads</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-hot">0</div>
+          <div class="stat-label">Hot Leads</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-warm">0</div>
+          <div class="stat-label">Warm Leads</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-new">0</div>
+          <div class="stat-label">New This Week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-followup">0</div>
+          <div class="stat-label">Follow-ups Due</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-customers">0</div>
+          <div class="stat-label">Customers</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pipeline View -->
+    <div id="view-pipeline" class="view hidden">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Lead Pipeline</h2>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <input type="text" class="search-box" id="search-pipeline" placeholder="Search leads..." onkeyup="searchLeads('pipeline')">
+            <button class="button button-primary" onclick="openAddModal()">+ Add Lead</button>
+          </div>
+        </div>
+        <div id="pipeline-table"></div>
+      </div>
+    </div>
+
+    <!-- Hot Leads View -->
+    <div id="view-hot" class="view hidden">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Hot Leads</h2>
+          <input type="text" class="search-box" id="search-hot" placeholder="Search hot leads..." onkeyup="searchLeads('hot')">
+        </div>
+        <div id="hot-table"></div>
+      </div>
+    </div>
+
+    <!-- Follow-ups View -->
+    <div id="view-followups" class="view hidden">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Follow-ups Due</h2>
+          <input type="text" class="search-box" id="search-followups" placeholder="Search follow-ups..." onkeyup="searchLeads('followups')">
+        </div>
+        <div id="followups-table"></div>
+      </div>
+    </div>
+
+    <!-- Customers View -->
+    <div id="view-customers" class="view hidden">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Customers</h2>
+          <input type="text" class="search-box" id="search-customers" placeholder="Search customers..." onkeyup="searchLeads('customers')">
+        </div>
+        <div id="customers-table"></div>
+      </div>
+    </div>
+
+    <!-- Nurture View -->
+    <div id="view-nurture" class="view hidden">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Nurture List</h2>
+          <input type="text" class="search-box" id="search-nurture" placeholder="Search nurture..." onkeyup="searchLeads('nurture')">
+        </div>
+        <div id="nurture-table"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Lead Modal -->
+  <div id="lead-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Add Lead</h3>
+        <button class="button button-secondary" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="lead-id">
+        <div class="form-group">
+          <label class="form-label">Name *</label>
+          <input type="text" class="form-input" id="lead-name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="lead-email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input type="tel" class="form-input" id="lead-phone">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Social Profile</label>
+          <input type="url" class="form-input" id="lead-social" placeholder="https://...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Source</label>
+          <select class="form-select" id="lead-source">
+            <option value="Facebook">Facebook</option>
+            <option value="Instagram">Instagram</option>
+            <option value="Twitter/X">Twitter/X</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Referral">Referral</option>
+            <option value="Website">Website</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="lead-status">
+            <option value="New">New</option>
+            <option value="Contacted">Contacted</option>
+            <option value="Interested">Interested</option>
+            <option value="Nurture">Nurture</option>
+            <option value="Customer">Customer</option>
+            <option value="Not Interested">Not Interested</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Temperature</label>
+          <select class="form-select" id="lead-temperature">
+            <option value="Hot">Hot</option>
+            <option value="Warm">Warm</option>
+            <option value="Cold">Cold</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Next Follow-up</label>
+          <input type="date" class="form-input" id="lead-next-followup">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <textarea class="form-textarea" id="lead-notes"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="button button-secondary" onclick="closeModal()">Cancel</button>
+        <button class="button button-primary" onclick="saveLead()">Save Lead</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize data
+    let leads = JSON.parse(localStorage.getItem('crm-leads')) || [
+      {
+        id: '1',
+        name: 'John Smith',
+        email: 'john@example.com',
+        phone: '555-0101',
+        social: 'https://facebook.com/johnsmith',
+        source: 'Facebook',
+        status: 'New',
+        temperature: 'Hot',
+        lastAction: 'Initial Contact',
+        lastContact: new Date().toISOString().split('T')[0],
+        nextFollowUp: new Date(Date.now() + 2*24*60*60*1000).toISOString().split('T')[0],
+        notes: 'Interested in our services',
+        dateAdded: new Date().toISOString().split('T')[0]
+      },
+      {
+        id: '2',
+        name: 'Sarah Johnson',
+        email: 'sarah@example.com',
+        phone: '555-0102',
+        social: 'https://linkedin.com/in/sarahjohnson',
+        source: 'LinkedIn',
+        status: 'Interested',
+        temperature: 'Warm',
+        lastAction: 'Follow-up 1',
+        lastContact: new Date().toISOString().split('T')[0],
+        nextFollowUp: new Date(Date.now() + 5*24*60*60*1000).toISOString().split('T')[0],
+        notes: 'Scheduled demo for next week',
+        dateAdded: new Date().toISOString().split('T')[0]
+      },
+      {
+        id: '3',
+        name: 'Mike Davis',
+        email: 'mike@example.com',
+        phone: '555-0103',
+        social: '',
+        source: 'Referral',
+        status: 'Customer',
+        temperature: 'Hot',
+        lastAction: 'Closed Deal',
+        lastContact: new Date().toISOString().split('T')[0],
+        nextFollowUp: null,
+        notes: 'Premium package customer',
+        dateAdded: new Date(Date.now() - 7*24*60*60*1000).toISOString().split('T')[0],
+        customerSince: new Date().toISOString().split('T')[0]
+      }
+    ];
+
+    let currentView = 'dashboard';
+
+    // Navigation
+    document.querySelectorAll('.nav-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentView = btn.dataset.view;
+        showView(currentView);
+      });
+    });
+
+    function showView(view) {
+      document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+      document.getElementById(`view-${view}`).classList.remove('hidden');
+      
+      if (view === 'dashboard') updateDashboard();
+      if (view === 'pipeline') renderPipeline();
+      if (view === 'hot') renderHotLeads();
+      if (view === 'followups') renderFollowups();
+      if (view === 'customers') renderCustomers();
+      if (view === 'nurture') renderNurture();
+    }
+
+    function updateDashboard() {
+      document.getElementById('stat-total').textContent = leads.length;
+      document.getElementById('stat-hot').textContent = leads.filter(l => l.temperature === 'Hot' && l.status !== 'Customer').length;
+      document.getElementById('stat-warm').textContent = leads.filter(l => l.temperature === 'Warm' && l.status !== 'Customer').length;
+      
+      const oneWeekAgo = new Date(Date.now() - 7*24*60*60*1000).toISOString().split('T')[0];
+      document.getElementById('stat-new').textContent = leads.filter(l => l.dateAdded >= oneWeekAgo).length;
+      
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('stat-followup').textContent = leads.filter(l => l.nextFollowUp && l.nextFollowUp <= today).length;
+      document.getElementById('stat-customers').textContent = leads.filter(l => l.status === 'Customer').length;
+    }
+
+    function getBadgeClass(status) {
+      const map = {
+        'New': 'badge-new',
+        'Contacted': 'badge-cold',
+        'Interested': 'badge-warm',
+        'Nurture': 'badge-nurture',
+        'Customer': 'badge-customer',
+        'Not Interested': 'badge-not-interested'
+      };
+      return map[status] || 'badge-cold';
+    }
+
+    function getTempBadgeClass(temp) {
+      const map = {
+        'Hot': 'badge-hot',
+        'Warm': 'badge-warm',
+        'Cold': 'badge-cold'
+      };
+      return map[temp] || 'badge-cold';
+    }
+
+    function renderTable(leadsData, containerId, showActions = true) {
+      const container = document.getElementById(containerId);
+      if (leadsData.length === 0) {
+        container.innerHTML = '<div class="empty-state">No leads found</div>';
+        return;
+      }
+
+      let html = `
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Contact</th>
+              <th>Source</th>
+              <th>Status</th>
+              <th>Temp</th>
+              <th>Last Contact</th>
+              <th>Next Follow-up</th>
+              ${showActions ? '<th>Actions</th>' : ''}
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      leadsData.forEach(lead => {
+        const nextFollowUp = lead.nextFollowUp ? 
+          (lead.nextFollowUp < new Date().toISOString().split('T')[0] ? 
+            `<span style="color: var(--danger); font-weight: 600;">${lead.nextFollowUp} (Overdue)</span>` : 
+            lead.nextFollowUp) : 
+          '-';
+        
+        html += `
+          <tr>
+            <td><strong>${lead.name}</strong></td>
+            <td>
+              ${lead.email ? `<div>${lead.email}</div>` : ''}
+              ${lead.phone ? `<div>${lead.phone}</div>` : ''}
+              ${lead.social ? `<a href="${lead.social}" target="_blank" style="font-size: 12px;">Profile</a>` : ''}
+            </td>
+            <td>${lead.source}</td>
+            <td><span class="badge ${getBadgeClass(lead.status)}">${lead.status}</span></td>
+            <td><span class="badge ${getTempBadgeClass(lead.temperature)}">${lead.temperature}</span></td>
+            <td>${lead.lastContact || '-'}</td>
+            <td>${nextFollowUp}</td>
+            ${showActions ? `
+            <td>
+              <div class="action-buttons">
+                <button class="action-btn button-primary" onclick="editLead('${lead.id}')">Edit</button>
+                <button class="action-btn button-danger" onclick="deleteLead('${lead.id}')">Delete</button>
+              </div>
+            </td>
+            ` : ''}
+          </tr>
+        `;
+      });
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function renderPipeline() {
+      renderTable(leads, 'pipeline-table');
+    }
+
+    function renderHotLeads() {
+      const hot = leads.filter(l => l.temperature === 'Hot' && l.status !== 'Customer');
+      renderTable(hot, 'hot-table');
+    }
+
+    function renderFollowups() {
+      const today = new Date().toISOString().split('T')[0];
+      const followups = leads.filter(l => l.nextFollowUp && l.nextFollowUp <= today);
+      renderTable(followups, 'followups-table');
+    }
+
+    function renderCustomers() {
+      const customers = leads.filter(l => l.status === 'Customer');
+      renderTable(customers, 'customers-table');
+    }
+
+    function renderNurture() {
+      const nurture = leads.filter(l => l.status === 'Nurture');
+      renderTable(nurture, 'nurture-table');
+    }
+
+    function searchLeads(view) {
+      const searchTerm = document.getElementById(`search-${view}`).value.toLowerCase();
+      let filtered = leads;
+
+      if (view === 'hot') filtered = leads.filter(l => l.temperature === 'Hot' && l.status !== 'Customer');
+      if (view === 'followups') {
+        const today = new Date().toISOString().split('T')[0];
+        filtered = leads.filter(l => l.nextFollowUp && l.nextFollowUp <= today);
+      }
+      if (view === 'customers') filtered = leads.filter(l => l.status === 'Customer');
+      if (view === 'nurture') filtered = leads.filter(l => l.status === 'Nurture');
+
+      if (searchTerm) {
+        filtered = filtered.filter(l => 
+          l.name.toLowerCase().includes(searchTerm) ||
+          (l.email && l.email.toLowerCase().includes(searchTerm)) ||
+          (l.phone && l.phone.includes(searchTerm)) ||
+          l.source.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      const tableId = `${view}-table`;
+      renderTable(filtered, tableId);
+    }
+
+    // Modal functions
+    function openAddModal() {
+      document.getElementById('modal-title').textContent = 'Add Lead';
+      document.getElementById('lead-id').value = '';
+      document.getElementById('lead-name').value = '';
+      document.getElementById('lead-email').value = '';
+      document.getElementById('lead-phone').value = '';
+      document.getElementById('lead-social').value = '';
+      document.getElementById('lead-source').value = 'Facebook';
+      document.getElementById('lead-status').value = 'New';
+      document.getElementById('lead-temperature').value = 'Warm';
+      document.getElementById('lead-next-followup').value = '';
+      document.getElementById('lead-notes').value = '';
+      document.getElementById('lead-modal').classList.remove('hidden');
+    }
+
+    function editLead(id) {
+      const lead = leads.find(l => l.id === id);
+      if (!lead) return;
+
+      document.getElementById('modal-title').textContent = 'Edit Lead';
+      document.getElementById('lead-id').value = lead.id;
+      document.getElementById('lead-name').value = lead.name;
+      document.getElementById('lead-email').value = lead.email || '';
+      document.getElementById('lead-phone').value = lead.phone || '';
+      document.getElementById('lead-social').value = lead.social || '';
+      document.getElementById('lead-source').value = lead.source;
+      document.getElementById('lead-status').value = lead.status;
+      document.getElementById('lead-temperature').value = lead.temperature;
+      document.getElementById('lead-next-followup').value = lead.nextFollowUp || '';
+      document.getElementById('lead-notes').value = lead.notes || '';
+      document.getElementById('lead-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('lead-modal').classList.add('hidden');
+    }
+
+    function saveLead() {
+      const id = document.getElementById('lead-id').value;
+      const name = document.getElementById('lead-name').value.trim();
+      
+      if (!name) {
+        alert('Name is required');
+        return;
+      }
+
+      const leadData = {
+        id: id || Date.now().toString(),
+        name: name,
+        email: document.getElementById('lead-email').value.trim(),
+        phone: document.getElementById('lead-phone').value.trim(),
+        social: document.getElementById('lead-social').value.trim(),
+        source: document.getElementById('lead-source').value,
+        status: document.getElementById('lead-status').value,
+        temperature: document.getElementById('lead-temperature').value,
+        nextFollowUp: document.getElementById('lead-next-followup').value || null,
+        notes: document.getElementById('lead-notes').value.trim(),
+        lastContact: new Date().toISOString().split('T')[0],
+        lastAction: id ? (leads.find(l => l.id === id)?.lastAction || 'Updated') : 'Initial Contact',
+        dateAdded: id ? (leads.find(l => l.id === id)?.dateAdded || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0]
+      };
+
+      if (leadData.status === 'Customer' && !leadData.customerSince) {
+        leadData.customerSince = new Date().toISOString().split('T')[0];
+      }
+
+      if (id) {
+        const index = leads.findIndex(l => l.id === id);
+        if (index !== -1) leads[index] = leadData;
+      } else {
+        leads.push(leadData);
+      }
+
+      saveToStorage();
+      closeModal();
+      showView(currentView);
+    }
+
+    function deleteLead(id) {
+      if (confirm('Are you sure you want to delete this lead?')) {
+        leads = leads.filter(l => l.id !== id);
+        saveToStorage();
+        showView(currentView);
+      }
+    }
+
+    function saveToStorage() {
+      localStorage.setItem('crm-leads', JSON.stringify(leads));
+    }
+
+    // Close modal on outside click
+    document.getElementById('lead-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('lead-modal')) closeModal();
+    });
+
+    // Initialize
+    updateDashboard();
+  </script>
+</body>
+</html>
