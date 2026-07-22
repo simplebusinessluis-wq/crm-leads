@@ -697,7 +697,92 @@
       if (e.target === document.getElementById('lead-modal')) closeModal();
     });
 
-    // Initialize
+    // Demo data
+    const demoLeads = [
+      {
+        id: '1',
+        name: 'Sarah Johnson',
+        email: 'sarah.j@email.com',
+        phone: '(555) 123-4567',
+        social: '@sarahjwellness',
+        source: 'Instagram',
+        status: 'Interested',
+        temperature: 'Hot',
+        nextFollowUp: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+        notes: 'Very interested in triGLP. Asked about pricing and shipping to Arizona. Follow up tomorrow.',
+        lastContact: new Date(Date.now() - 172800000).toISOString().split('T')[0],
+        lastAction: 'Sent product info',
+        dateAdded: new Date(Date.now() - 604800000).toISOString().split('T')[0]
+      },
+      {
+        id: '2',
+        name: 'Mike Chen',
+        email: 'mchen@email.com',
+        phone: '(555) 987-6543',
+        social: '@mikechenfitness',
+        source: 'YouTube',
+        status: 'Contacted',
+        temperature: 'Warm',
+        nextFollowUp: new Date(Date.now() + 172800000).toISOString().split('T')[0],
+        notes: 'Fitness coach looking for natural GLP-1 alternatives for clients. Wants samples.',
+        lastContact: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+        lastAction: 'Initial outreach',
+        dateAdded: new Date(Date.now() - 345600000).toISOString().split('T')[0]
+      },
+      {
+        id: '3',
+        name: 'Maria Garcia',
+        email: 'maria.g@email.com',
+        phone: '(555) 456-7890',
+        social: '@mariahealthyliving',
+        source: 'Facebook',
+        status: 'New',
+        temperature: 'Warm',
+        nextFollowUp: new Date(Date.now() + 432000000).toISOString().split('T')[0],
+        notes: 'Commented on Facebook post about weight loss. Asked for more info.',
+        lastContact: new Date(Date.now() - 259200000).toISOString().split('T')[0],
+        lastAction: 'Comment reply',
+        dateAdded: new Date(Date.now() - 259200000).toISOString().split('T')[0]
+      },
+      {
+        id: '4',
+        name: 'David Park',
+        email: 'dpark@email.com',
+        phone: '(555) 234-5678',
+        social: '@dparknutrition',
+        source: 'Referral',
+        status: 'Customer',
+        temperature: 'Hot',
+        nextFollowUp: new Date(Date.now() + 1296000000).toISOString().split('T')[0],
+        notes: 'Bought triGLP 2 weeks ago. Loves the energy boost. Interested in IGNYT next.',
+        lastContact: new Date(Date.now() - 604800000).toISOString().split('T')[0],
+        lastAction: 'Purchase follow-up',
+        dateAdded: new Date(Date.now() - 1209600000).toISOString().split('T')[0],
+        customerSince: new Date(Date.now() - 1209600000).toISOString().split('T')[0]
+      },
+      {
+        id: '5',
+        name: 'Jennifer Adams',
+        email: 'jen.adams@email.com',
+        phone: '(555) 876-5432',
+        social: '@jenadamslife',
+        source: 'TikTok',
+        status: 'Nurture',
+        temperature: 'Cold',
+        nextFollowUp: new Date(Date.now() + 5184000000).toISOString().split('T')[0],
+        notes: 'Not ready to buy yet. Wants to see more results first. Add to nurture sequence.',
+        lastContact: new Date(Date.now() - 5184000000).toISOString().split('T')[0],
+        lastAction: 'Sent testimonial video',
+        dateAdded: new Date(Date.now() - 7776000000).toISOString().split('T')[0]
+      }
+    ];
+
+    // Initialize with demo data if empty
+    if (leads.length === 0) {
+      leads = demoLeads;
+      saveToStorage();
+    }
+
     updateDashboard();
   </script>
 </body>
