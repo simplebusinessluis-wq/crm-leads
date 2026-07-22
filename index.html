@@ -383,8 +383,9 @@
   </div>
 
   <script>
-    // Initialize data
-    let leads = JSON.parse(localStorage.getItem('crm-leads')) || [];
+    // Initialize data - clear old data and load fresh demo data
+    localStorage.removeItem('crm-leads');
+    let leads = [];
 
     let currentView = 'dashboard';
 
