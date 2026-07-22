@@ -384,54 +384,7 @@
 
   <script>
     // Initialize data
-    let leads = JSON.parse(localStorage.getItem('crm-leads')) || [
-      {
-        id: '1',
-        name: 'John Smith',
-        email: 'john@example.com',
-        phone: '555-0101',
-        social: 'https://facebook.com/johnsmith',
-        source: 'Facebook',
-        status: 'New',
-        temperature: 'Hot',
-        lastAction: 'Initial Contact',
-        lastContact: new Date().toISOString().split('T')[0],
-        nextFollowUp: new Date(Date.now() + 2*24*60*60*1000).toISOString().split('T')[0],
-        notes: 'Interested in our services',
-        dateAdded: new Date().toISOString().split('T')[0]
-      },
-      {
-        id: '2',
-        name: 'Sarah Johnson',
-        email: 'sarah@example.com',
-        phone: '555-0102',
-        social: 'https://linkedin.com/in/sarahjohnson',
-        source: 'LinkedIn',
-        status: 'Interested',
-        temperature: 'Warm',
-        lastAction: 'Follow-up 1',
-        lastContact: new Date().toISOString().split('T')[0],
-        nextFollowUp: new Date(Date.now() + 5*24*60*60*1000).toISOString().split('T')[0],
-        notes: 'Scheduled demo for next week',
-        dateAdded: new Date().toISOString().split('T')[0]
-      },
-      {
-        id: '3',
-        name: 'Mike Davis',
-        email: 'mike@example.com',
-        phone: '555-0103',
-        social: '',
-        source: 'Referral',
-        status: 'Customer',
-        temperature: 'Hot',
-        lastAction: 'Closed Deal',
-        lastContact: new Date().toISOString().split('T')[0],
-        nextFollowUp: null,
-        notes: 'Premium package customer',
-        dateAdded: new Date(Date.now() - 7*24*60*60*1000).toISOString().split('T')[0],
-        customerSince: new Date().toISOString().split('T')[0]
-      }
-    ];
+    let leads = JSON.parse(localStorage.getItem('crm-leads')) || [];
 
     let currentView = 'dashboard';
 
